@@ -1,6 +1,7 @@
 import { Phone, Users, Fuel, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Car, WHATSAPP_URL } from '@/data/cars';
+import { Car } from '@/data/cars';
+import { saveReservation } from '@/hooks/useReservations';
 
 interface CarCardProps {
   car: Car;
@@ -66,7 +67,12 @@ const CarCard = ({ car, index }: CarCardProps) => {
             <span className="text-2xl font-bold text-gold">{car.pricePerDay}</span>
             <span className="text-muted-foreground text-sm"> DH/jour</span>
           </div>
-          <a href={`https://wa.me/212664550547?text=Bonjour, je souhaite réserver la ${car.name}`} target="_blank" rel="noopener noreferrer">
+          <a 
+            href={`https://wa.me/212664550547?text=Bonjour, je souhaite réserver la ${car.name}`} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            onClick={() => saveReservation(car.name, car.category)}
+          >
             <Button variant="whatsapp" size="sm" className="rounded-full">
               <Phone className="h-4 w-4 mr-2" />
               Réserver
