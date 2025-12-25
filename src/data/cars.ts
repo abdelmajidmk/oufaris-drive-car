@@ -51,7 +51,7 @@ export const cars: Car[] = [
   },
   {
     id: '4',
-    name: 'Volkswagen Golf 8',
+    name: 'Volkswagen Golf 8.5',
     image: golf8,
     pricePerDay: 700,
     category: 'premium',
