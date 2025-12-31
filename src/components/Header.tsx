@@ -1,6 +1,7 @@
 import { Phone, Instagram, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PHONE_NUMBER, INSTAGRAM_URL, WHATSAPP_URL } from '@/data/cars';
+import carLogo from '@/assets/car-logo.png';
 
 const Header = () => {
   return (
@@ -9,9 +10,11 @@ const Header = () => {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <a href="/" className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-gold-gradient flex items-center justify-center">
-              <span className="font-serif text-xl font-bold text-navy-dark">OF</span>
-            </div>
+            <img 
+              src={carLogo} 
+              alt="Ou Faris Drive Car Logo" 
+              className="w-12 h-12 rounded-full object-cover border-2 border-gold/30"
+            />
             <div className="hidden sm:block">
               <h1 className="font-serif text-xl font-bold text-primary-foreground">Ou Faris</h1>
               <p className="text-xs text-gold font-medium tracking-widest uppercase">Drive Car</p>

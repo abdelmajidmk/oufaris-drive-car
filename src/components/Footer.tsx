@@ -1,5 +1,6 @@
-import { Phone, Instagram } from 'lucide-react';
-import { PHONE_NUMBER, INSTAGRAM_URL } from '@/data/cars';
+import { Phone, Instagram, MapPin } from 'lucide-react';
+import { PHONE_NUMBER, INSTAGRAM_URL, LOCATION_URL } from '@/data/cars';
+import carLogo from '@/assets/car-logo.png';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -10,9 +11,11 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row items-center justify-between gap-8">
           {/* Logo */}
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gold-gradient flex items-center justify-center">
-              <span className="font-serif text-lg font-bold text-navy-dark">OF</span>
-            </div>
+            <img 
+              src={carLogo} 
+              alt="Ou Faris Drive Car Logo" 
+              className="w-10 h-10 rounded-full object-cover border-2 border-gold/30"
+            />
             <div>
               <h3 className="font-serif text-lg font-bold text-primary-foreground">Ou Faris Drive Car</h3>
               <p className="text-xs text-primary-foreground/50">Location de voitures au Maroc</p>
@@ -47,6 +50,14 @@ const Footer = () => {
               className="w-10 h-10 rounded-full bg-gold/10 flex items-center justify-center hover:bg-gold-gradient group transition-all duration-300"
             >
               <Instagram className="h-5 w-5 text-gold group-hover:text-navy-dark" />
+            </a>
+            <a 
+              href={LOCATION_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-10 h-10 rounded-full bg-gold/10 flex items-center justify-center hover:bg-gold-gradient group transition-all duration-300"
+            >
+              <MapPin className="h-5 w-5 text-gold group-hover:text-navy-dark" />
             </a>
           </div>
         </div>

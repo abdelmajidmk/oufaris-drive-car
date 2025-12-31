@@ -1,6 +1,6 @@
 import { Phone, Instagram, MapPin, Clock, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { PHONE_NUMBER, INSTAGRAM_URL, WHATSAPP_URL } from '@/data/cars';
+import { PHONE_NUMBER, INSTAGRAM_URL, WHATSAPP_URL, LOCATION_URL, LOCATION_ADDRESS } from '@/data/cars';
 
 const Contact = () => {
   return (
@@ -57,15 +57,20 @@ const Contact = () => {
                 </div>
               </div>
 
-              <div className="flex items-center gap-4">
-                <div className="w-14 h-14 rounded-xl bg-gold/10 flex items-center justify-center">
-                  <MapPin className="h-6 w-6 text-gold" />
+              <a 
+                href={LOCATION_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-4 group"
+              >
+                <div className="w-14 h-14 rounded-xl bg-gold/10 flex items-center justify-center group-hover:bg-gold-gradient transition-all duration-300">
+                  <MapPin className="h-6 w-6 text-gold group-hover:text-navy-dark transition-colors" />
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Localisation</p>
-                  <p className="text-lg font-semibold text-foreground">Maroc</p>
+                  <p className="text-lg font-semibold text-foreground">{LOCATION_ADDRESS}</p>
                 </div>
-              </div>
+              </a>
             </div>
           </div>
 
