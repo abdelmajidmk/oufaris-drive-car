@@ -6,6 +6,7 @@ import troc from '@/assets/cars/troc.jpg';
 import accent from '@/assets/cars/accent.jpg';
 import clio5 from '@/assets/cars/clio5.jpg';
 import peugeot208 from '@/assets/cars/peugeot208.jpg';
+import touareg from '@/assets/cars/touareg.jpg';
 
 export interface Car {
   id: string;
@@ -98,6 +99,16 @@ export const cars: Car[] = [
     seats: 5,
     transmission: 'Manuelle',
     fuel: 'Essence',
+  },
+  {
+    id: '9',
+    name: 'Volkswagen Touareg',
+    image: touareg,
+    pricePerDay: 1300,
+    category: 'premium',
+    seats: 5,
+    transmission: 'Automatique',
+    fuel: 'Diesel',
   },
 ];
 
