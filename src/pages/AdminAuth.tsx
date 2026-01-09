@@ -13,7 +13,8 @@ const AdminAuth = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const { user, isAdmin, loading, signIn } = useAuth();
+  const [isSignUp, setIsSignUp] = useState(false);
+  const { user, isAdmin, loading, signIn, signUp } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -35,23 +36,52 @@ const AdminAuth = () => {
       return;
     }
 
-    setIsLoading(true);
-    
-    const { error } = await signIn(email, password);
-    
-    if (error) {
+    if (password.length < 6) {
       toast({
-        title: "Erreur de connexion",
-        description: error.message === 'Invalid login credentials' 
-          ? "Email ou mot de passe incorrect" 
-          : error.message,
+        title: "Erreur",
+        description: "Le mot de passe doit contenir au moins 6 caractères",
         variant: "destructive",
       });
-      setIsLoading(false);
       return;
     }
+
+    setIsLoading(true);
     
-    // Auth state change will handle the redirect
+    if (isSignUp) {
+      const { error } = await signUp(email, password);
+      
+      if (error) {
+        toast({
+          title: "Erreur d'inscription",
+          description: error.message === 'User already registered' 
+            ? "Cet email est déjà utilisé" 
+            : error.message,
+          variant: "destructive",
+        });
+        setIsLoading(false);
+        return;
+      }
+      
+      toast({
+        title: "Compte créé !",
+        description: "Votre compte a été créé. Demandez les droits admin.",
+      });
+    } else {
+      const { error } = await signIn(email, password);
+      
+      if (error) {
+        toast({
+          title: "Erreur de connexion",
+          description: error.message === 'Invalid login credentials' 
+            ? "Email ou mot de passe incorrect" 
+            : error.message,
+          variant: "destructive",
+        });
+        setIsLoading(false);
+        return;
+      }
+    }
+    
     setIsLoading(false);
   };
 
@@ -71,9 +101,13 @@ const AdminAuth = () => {
             <img src={carLogo} alt="Ou Faris Drive Car" className="h-16 w-auto" />
           </div>
           <div>
-            <CardTitle className="text-2xl font-bold">Administration</CardTitle>
+            <CardTitle className="text-2xl font-bold">
+              {isSignUp ? 'Créer un compte' : 'Administration'}
+            </CardTitle>
             <CardDescription>
-              Connectez-vous pour accéder au tableau de bord
+              {isSignUp 
+                ? 'Créez votre compte administrateur' 
+                : 'Connectez-vous pour accéder au tableau de bord'}
             </CardDescription>
           </div>
         </CardHeader>
@@ -105,11 +139,23 @@ const AdminAuth = () => {
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Connexion...
+                  {isSignUp ? 'Création...' : 'Connexion...'}
                 </>
               ) : (
-                "Se connecter"
+                isSignUp ? "Créer le compte" : "Se connecter"
               )}
+            </Button>
+            
+            <Button 
+              type="button" 
+              variant="ghost" 
+              className="w-full" 
+              onClick={() => setIsSignUp(!isSignUp)}
+              disabled={isLoading}
+            >
+              {isSignUp 
+                ? 'Déjà un compte ? Se connecter' 
+                : "Pas de compte ? S'inscrire"}
             </Button>
           </form>
           
