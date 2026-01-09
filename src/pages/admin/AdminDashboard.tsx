@@ -1,8 +1,10 @@
 import { useReservations } from '@/hooks/useReservations';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CalendarDays, Car, TrendingUp, Clock, Users } from 'lucide-react';
-import { format, subDays, isAfter } from 'date-fns';
+import { format, subDays, isAfter, startOfDay, eachDayOfInterval } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
 
 const AdminDashboard = () => {
   const { data: reservations, isLoading } = useReservations();
@@ -28,6 +30,43 @@ const AdminDashboard = () => {
   const mostPopular = popularCar 
     ? Object.entries(popularCar).sort((a, b) => b[1] - a[1])[0]
     : null;
+
+  // Data for daily chart (last 7 days)
+  const last7Days = eachDayOfInterval({
+    start: subDays(today, 6),
+    end: today
+  });
+
+  const dailyData = last7Days.map(day => {
+    const dayStart = startOfDay(day);
+    const count = reservations?.filter(r => {
+      const resDate = startOfDay(new Date(r.created_at));
+      return resDate.getTime() === dayStart.getTime();
+    }).length || 0;
+    
+    return {
+      name: format(day, 'EEE', { locale: fr }),
+      date: format(day, 'dd/MM'),
+      reservations: count
+    };
+  });
+
+  // Data for car popularity pie chart
+  const carData = popularCar 
+    ? Object.entries(popularCar)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5)
+        .map(([name, value]) => ({ name, value }))
+    : [];
+
+  const COLORS = ['hsl(var(--primary))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))'];
+
+  const chartConfig = {
+    reservations: {
+      label: "Réservations",
+      color: "hsl(var(--primary))",
+    },
+  };
 
   const recentReservations = reservations?.slice(0, 5) || [];
 
@@ -97,6 +136,110 @@ const AdminDashboard = () => {
             <p className="text-xs text-muted-foreground mt-1">
               {mostPopular ? `${mostPopular[1]} réservations` : 'Aucune donnée'}
             </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Charts Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Daily Reservations Chart */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <TrendingUp className="h-5 w-5" />
+              Réservations des 7 derniers jours
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {isLoading ? (
+              <div className="h-[250px] flex items-center justify-center text-muted-foreground">
+                Chargement...
+              </div>
+            ) : (
+              <ChartContainer config={chartConfig} className="h-[250px] w-full">
+                <BarChart data={dailyData}>
+                  <XAxis 
+                    dataKey="name" 
+                    tickLine={false} 
+                    axisLine={false}
+                    tick={{ fontSize: 12 }}
+                  />
+                  <YAxis 
+                    tickLine={false} 
+                    axisLine={false}
+                    tick={{ fontSize: 12 }}
+                    allowDecimals={false}
+                  />
+                  <ChartTooltip 
+                    content={<ChartTooltipContent />}
+                    cursor={{ fill: 'hsl(var(--muted))' }}
+                  />
+                  <Bar 
+                    dataKey="reservations" 
+                    fill="hsl(var(--primary))" 
+                    radius={[4, 4, 0, 0]}
+                  />
+                </BarChart>
+              </ChartContainer>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Car Popularity Pie Chart */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Car className="h-5 w-5" />
+              Voitures les plus demandées
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {isLoading ? (
+              <div className="h-[250px] flex items-center justify-center text-muted-foreground">
+                Chargement...
+              </div>
+            ) : carData.length === 0 ? (
+              <div className="h-[250px] flex items-center justify-center text-muted-foreground">
+                Aucune donnée disponible
+              </div>
+            ) : (
+              <div className="h-[250px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={carData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={90}
+                      paddingAngle={5}
+                      dataKey="value"
+                      label={({ name, percent }) => `${name.split(' ')[0]} (${(percent * 100).toFixed(0)}%)`}
+                      labelLine={false}
+                    >
+                      {carData.map((_, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <ChartTooltip 
+                      content={({ active, payload }) => {
+                        if (active && payload && payload.length) {
+                          return (
+                            <div className="bg-background border rounded-lg shadow-lg p-2">
+                              <p className="font-medium">{payload[0].name}</p>
+                              <p className="text-sm text-muted-foreground">
+                                {payload[0].value} réservations
+                              </p>
+                            </div>
+                          );
+                        }
+                        return null;
+                      }}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
